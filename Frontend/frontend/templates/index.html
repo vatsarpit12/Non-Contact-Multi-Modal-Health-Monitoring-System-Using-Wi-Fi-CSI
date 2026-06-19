@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Health Monitoring System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+            <h1 class="display-4">
+                <i class="fas fa-heartbeat me-3"></i>Health Monitoring System
+            </h1>
+            <p class="lead">Non-Contact Multi-Modal Health Monitoring using Wi-Fi CSI</p>
+            <hr class="my-4">
+            <p>Monitor vital signs and health metrics using advanced Wi-Fi Channel State Information (CSI) technology.</p>
+            <a class="btn btn-light btn-lg" href="{{ url_for('demo') }}" role="button">
+                <i class="fas fa-play me-2"></i>Try Demo
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Patient Management</h5>
+                <p class="card-text">Manage patient information, medical conditions, and health records.</p>
+                <a href="{{ url_for('patients') }}" class="btn btn-primary">
+                    <i class="fas fa-users me-1"></i>View Patients
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Health Monitoring</h5>
+                <p class="card-text">Monitor vital signs including heart rate, respiration, and activity levels.</p>
+                <a href="{{ url_for('recordings') }}" class="btn btn-success">
+                    <i class="fas fa-chart-line me-1"></i>View Recordings
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-upload fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Data Upload</h5>
+                <p class="card-text">Upload CSI recordings for analysis and health metric extraction.</p>
+                <a href="{{ url_for('upload_recording') }}" class="btn btn-info">
+                    <i class="fas fa-upload me-1"></i>Upload Data
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>System Features
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-heartbeat text-danger me-2"></i>Vital Signs Monitoring</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Heart Rate Detection</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Respiration Rate Monitoring</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Heart Rate Variability (HRV)</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Activity Classification</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-shield-alt text-warning me-2"></i>Health Assessment</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Risk Score Calculation</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Alert Generation</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Trend Analysis</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Non-Contact Monitoring</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('new_patient') }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-user-plus me-1"></i>Add Patient
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('upload_recording') }}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-upload me-1"></i>Upload Recording
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('demo') }}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-play me-1"></i>Run Demo
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('health_status') }}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-heartbeat me-1"></i>System Status
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

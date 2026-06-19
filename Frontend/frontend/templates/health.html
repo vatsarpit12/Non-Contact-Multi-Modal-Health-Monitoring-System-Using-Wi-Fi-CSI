@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}System Health - Health Monitoring System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-heartbeat me-2"></i>System Health Status</h2>
+    <button onclick="location.reload()" class="btn btn-outline-primary">
+        <i class="fas fa-sync-alt me-1"></i>Refresh
+    </button>
+</div>
+
+{% if status.error %}
+    <div class="alert alert-danger">
+        <h5><i class="fas fa-exclamation-triangle me-2"></i>System Error</h5>
+        <p class="mb-0">{{ status.error }}</p>
+    </div>
+{% else %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-server me-2"></i>System Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span><strong>Overall Status:</strong></span>
+                        <span class="badge bg-{{ 'success' if status.status == 'healthy' else 'danger' }} fs-6">
+                            {{ status.status|title }}
+                        </span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span><strong>Database:</strong></span>
+                        <span class="badge bg-{{ 'success' if status.database == 'connected' else 'danger' }}">
+                            {{ status.database|title }}
+                        </span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span><strong>Models Available:</strong></span>
+                        <span class="badge bg-{{ 'success' if status.models_available else 'warning' }}">
+                            {{ 'Yes' if status.models_available else 'No' }}
+                        </span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><strong>Version:</strong></span>
+                        <span class="text-muted">{{ status.version or 'Unknown' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>System Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Health Monitoring System</strong></p>
+                    <p class="text-muted">Non-Contact Multi-Modal Health Monitoring using Wi-Fi CSI</p>
+                    
+                    <hr>
+                    
+                    <h6>Features:</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>Real-time Health Monitoring</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Wi-Fi CSI Analysis</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Vital Signs Detection</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Risk Assessment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>System Components
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <i class="fas fa-database fa-2x text-primary mb-2"></i>
+                                    <h6>Database</h6>
+                                    <span class="badge bg-{{ 'success' if status.database == 'connected' else 'danger' }}">
+                                        {{ status.database|title }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <i class="fas fa-brain fa-2x text-info mb-2"></i>
+                                    <h6>ML Models</h6>
+                                    <span class="badge bg-{{ 'success' if status.models_available else 'warning' }}">
+                                        {{ 'Available' if status.models_available else 'Not Loaded' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <i class="fas fa-api fa-2x text-success mb-2"></i>
+                                    <h6>API Server</h6>
+                                    <span class="badge bg-success">Running</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <i class="fas fa-globe fa-2x text-warning mb-2"></i>
+                                    <h6>Web Interface</h6>
+                                    <span class="badge bg-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if not status.models_available %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-warning">
+                <h5><i class="fas fa-exclamation-triangle me-2"></i>Models Not Available</h5>
+                <p class="mb-0">
+                    The machine learning models are not currently loaded. The system will use dummy data for demonstration purposes. 
+                    To load trained models, ensure the model files are present in the models directory.
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endif %}
+{% endblock %}

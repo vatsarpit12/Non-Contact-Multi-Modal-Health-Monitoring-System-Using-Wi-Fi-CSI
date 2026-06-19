@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Demo - Health Monitoring System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-info text-white p-5 rounded mb-4">
+            <h1 class="display-5">
+                <i class="fas fa-play me-3"></i>System Demo
+            </h1>
+            <p class="lead">Experience the complete health monitoring workflow with sample data.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>Demo Controls
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Click the button below to run the complete health monitoring demo. This will:</p>
+                <ol>
+                    <li>Check system health status</li>
+                    <li>Create a test patient</li>
+                    <li>Generate and upload sample CSI data</li>
+                    <li>Process the recording to extract health metrics</li>
+                    <li>Display the results</li>
+                </ol>
+                
+                <div class="d-grid gap-2">
+                    <button id="runDemoBtn" class="btn btn-primary btn-lg">
+                        <i class="fas fa-play me-2"></i>Run Demo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Demo Features
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>API Health Check</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Patient Management</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Data Upload</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Health Processing</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Metrics Display</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Demo Output -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-terminal me-2"></i>Demo Output
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="demoOutput" class="bg-dark text-light p-3 rounded" style="min-height: 200px; font-family: monospace;">
+                    <div class="text-muted">Click "Run Demo" to see the output here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sample Data Preview -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Sample Health Metrics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <i class="fas fa-heartbeat fa-2x text-danger mb-2"></i>
+                                <h6>Heart Rate</h6>
+                                <h4 class="text-danger" id="sampleHeartRate">--</h4>
+                                <small class="text-muted">BPM</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <i class="fas fa-lungs fa-2x text-info mb-2"></i>
+                                <h6>Respiration</h6>
+                                <h4 class="text-info" id="sampleRespiration">--</h4>
+                                <small class="text-muted">Breaths/min</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <i class="fas fa-chart-area fa-2x text-warning mb-2"></i>
+                                <h6>HRV</h6>
+                                <h4 class="text-warning" id="sampleHRV">--</h4>
+                                <small class="text-muted">ms</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+                                <h6>Risk Score</h6>
+                                <h4 class="text-danger" id="sampleRiskScore">--</h4>
+                                <small class="text-muted">0-100</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('runDemoBtn').addEventListener('click', function() {
+    const btn = this;
+    const output = document.getElementById('demoOutput');
+    
+    // Disable button and show loading
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Running Demo...';
+    output.innerHTML = '<div class="text-info">Starting demo...</div>';
+    
+    // Run demo
+    fetch('/api/demo/run', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            output.innerHTML = '<div class="text-success">Demo completed successfully!</div><pre>' + data.output + '</pre>';
+            
+            // Extract and display sample metrics
+            const lines = data.output.split('\n');
+            let heartRate = '--', respiration = '--', hrv = '--', riskScore = '--';
+            
+            lines.forEach(line => {
+                if (line.includes('heart_rate')) {
+                    const match = line.match(/heart_rate['"]:\s*([\d.]+)/);
+                    if (match) heartRate = Math.round(parseFloat(match[1]));
+                }
+                if (line.includes('respiration_rate')) {
+                    const match = line.match(/respiration_rate['"]:\s*([\d.]+)/);
+                    if (match) respiration = Math.round(parseFloat(match[1]));
+                }
+                if (line.includes('hrv')) {
+                    const match = line.match(/hrv['"]:\s*([\d.]+)/);
+                    if (match) hrv = Math.round(parseFloat(match[1]));
+                }
+                if (line.includes('risk_score')) {
+                    const match = line.match(/risk_score['"]:\s*([\d.]+)/);
+                    if (match) riskScore = Math.round(parseFloat(match[1]));
+                }
+            });
+            
+            document.getElementById('sampleHeartRate').textContent = heartRate;
+            document.getElementById('sampleRespiration').textContent = respiration;
+            document.getElementById('sampleHRV').textContent = hrv;
+            document.getElementById('sampleRiskScore').textContent = riskScore;
+        } else {
+            output.innerHTML = '<div class="text-danger">Demo failed:</div><pre>' + data.error + '</pre>';
+        }
+    })
+    .catch(error => {
+        output.innerHTML = '<div class="text-danger">Error running demo:</div><pre>' + error.message + '</pre>';
+    })
+    .finally(() => {
+        // Re-enable button
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-play me-2"></i>Run Demo';
+    });
+});
+</script>
+{% endblock %}

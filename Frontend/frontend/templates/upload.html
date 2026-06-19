@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Recording - Health Monitoring System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-upload me-2"></i>Upload CSI Recording
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="patient_id" class="form-label">Select Patient *</label>
+                        <select class="form-select" id="patient_id" name="patient_id" required>
+                            <option value="">Choose a patient...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}" 
+                                    {% if request.args.get('patient_id') == patient.id|string %}selected{% endif %}>
+                                {{ patient.name }} (ID: {{ patient.id }}, Age: {{ patient.age }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="device_id" class="form-label">Device ID</label>
+                        <input type="text" class="form-control" id="device_id" name="device_id" 
+                               value="web_upload" placeholder="Enter device identifier">
+                        <div class="form-text">Optional identifier for the recording device</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Recording File *</label>
+                        <input type="file" class="form-control" id="file" name="file" 
+                               accept=".json,.csv" required>
+                        <div class="form-text">Supported formats: JSON, CSV</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>File Format:</strong> The file should contain CSI data in JSON format with a 'csi_data' field, 
+                        or CSV format with numerical data. The system will automatically process the recording after upload.
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('recordings') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-1"></i>Upload & Process
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-question-circle me-2"></i>Upload Instructions
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>JSON Format:</h6>
+                <pre class="bg-light p-3 rounded"><code>{
+  "csi_data": [
+    [1.2, 0.8, -0.5],
+    [1.1, 0.9, -0.4],
+    ...
+  ]
+}</code></pre>
+                
+                <h6 class="mt-3">CSV Format:</h6>
+                <pre class="bg-light p-3 rounded"><code>antenna1,antenna2,antenna3
+1.2,0.8,-0.5
+1.1,0.9,-0.4
+...</code></pre>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Note:</strong> The system will automatically process your recording and extract health metrics 
+                    including heart rate, respiration rate, and activity classification.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

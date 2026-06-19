@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Recordings - Health Monitoring System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-chart-line me-2"></i>Recordings</h2>
+    <a href="{{ url_for('upload_recording') }}" class="btn btn-primary">
+        <i class="fas fa-upload me-1"></i>Upload Recording
+    </a>
+</div>
+
+{% if recordings %}
+    <div class="row">
+        {% for recording in recordings %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-file-alt me-2"></i>Recording #{{ recording.id }}
+                    </h5>
+                    <p class="card-text">
+                        <strong>Patient:</strong> {{ recording.patient.name if recording.patient else 'Unknown' }} (ID: {{ recording.patient_id }})<br>
+                        <strong>Device:</strong> {{ recording.device_id or 'Unknown' }}<br>
+                        <strong>Status:</strong> 
+                        <span class="badge bg-{{ 'success' if recording.processed else 'warning' }}">
+                            {{ 'Processed' if recording.processed else 'Pending' }}
+                        </span><br>
+                        <strong>Uploaded:</strong> {{ recording.timestamp[:10] if recording.timestamp else 'Unknown' }}
+                        {% if recording.metrics %}
+                        <br><strong>Risk Score:</strong> {{ "%.1f"|format(recording.metrics.risk_score) if recording.metrics.risk_score else 'N/A' }}
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="card-footer">
+                    {% if recording.processed %}
+                        <a href="{{ url_for('view_recording_metrics', recording_id=recording.id) }}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-chart-line me-1"></i>View Metrics
+                        </a>
+                    {% else %}
+                        <button class="btn btn-outline-warning btn-sm" disabled>
+                            <i class="fas fa-clock me-1"></i>Processing...
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
+        <h4 class="text-muted">No Recordings Found</h4>
+        <p class="text-muted">Upload CSI recordings to start monitoring health metrics.</p>
+        <a href="{{ url_for('upload_recording') }}" class="btn btn-primary">
+            <i class="fas fa-upload me-1"></i>Upload First Recording
+        </a>
+    </div>
+{% endif %}
+
+<!-- Information Card -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>About Recordings
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-upload text-primary me-2"></i>Upload Process</h6>
+                        <ol class="list-unstyled">
+                            <li><i class="fas fa-1 text-muted me-2"></i>Select a patient</li>
+                            <li><i class="fas fa-2 text-muted me-2"></i>Choose a CSI recording file</li>
+                            <li><i class="fas fa-3 text-muted me-2"></i>Upload and process automatically</li>
+                            <li><i class="fas fa-4 text-muted me-2"></i>View extracted health metrics</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-chart-line text-success me-2"></i>Extracted Metrics</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-heartbeat text-danger me-2"></i>Heart Rate</li>
+                            <li><i class="fas fa-lungs text-info me-2"></i>Respiration Rate</li>
+                            <li><i class="fas fa-chart-area text-warning me-2"></i>Heart Rate Variability</li>
+                            <li><i class="fas fa-running text-primary me-2"></i>Activity Classification</li>
+                            <li><i class="fas fa-exclamation-triangle text-danger me-2"></i>Risk Score</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

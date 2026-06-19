@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}{{ patient.name }} - Health Monitoring System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user me-2"></i>{{ patient.name }}</h2>
+    <a href="{{ url_for('patients') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Patients
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Patient Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>Patient ID:</strong></td>
+                        <td>{{ patient.id }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Name:</strong></td>
+                        <td>{{ patient.name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Age:</strong></td>
+                        <td>{{ patient.age }} years</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conditions:</strong></td>
+                        <td>
+                            {% if patient.conditions %}
+                                {{ patient.conditions }}
+                            {% else %}
+                                <span class="text-muted">None recorded</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Created:</strong></td>
+                        <td>{{ patient.created_at[:10] if patient.created_at else 'Unknown' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('upload_recording') }}?patient_id={{ patient.id }}" class="btn btn-primary">
+                        <i class="fas fa-upload me-1"></i>Upload Recording
+                    </a>
+                    <a href="{{ url_for('recordings') }}?patient_id={{ patient.id }}" class="btn btn-outline-success">
+                        <i class="fas fa-chart-line me-1"></i>View Recordings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Metrics Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-heartbeat me-2"></i>Recent Health Metrics
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_metrics %}
+                    <div class="row">
+                        {% for metric_data in recent_metrics %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-file-alt me-1"></i>Recording #{{ metric_data.recording_id }}
+                                        <small class="text-muted d-block">{{ metric_data.timestamp[:10] if metric_data.timestamp else 'Unknown' }}</small>
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    {% set metrics = metric_data.metrics %}
+                                    <div class="row text-center">
+                                        <div class="col-6 mb-2">
+                                            <div class="border rounded p-2">
+                                                <i class="fas fa-heartbeat text-danger"></i>
+                                                <div class="small text-muted">Heart Rate</div>
+                                                <div class="fw-bold">{{ "%.1f"|format(metrics.heart_rate) if metrics.heart_rate else 'N/A' }} bpm</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <div class="border rounded p-2">
+                                                <i class="fas fa-lungs text-info"></i>
+                                                <div class="small text-muted">Respiration</div>
+                                                <div class="fw-bold">{{ "%.1f"|format(metrics.respiration_rate) if metrics.respiration_rate else 'N/A' }} rpm</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <div class="border rounded p-2">
+                                                <i class="fas fa-chart-area text-warning"></i>
+                                                <div class="small text-muted">HRV</div>
+                                                <div class="fw-bold">{{ "%.1f"|format(metrics.hrv) if metrics.hrv else 'N/A' }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <div class="border rounded p-2">
+                                                <i class="fas fa-exclamation-triangle text-danger"></i>
+                                                <div class="small text-muted">Risk Score</div>
+                                                <div class="fw-bold">{{ "%.1f"|format(metrics.risk_score) if metrics.risk_score else 'N/A' }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 text-center">
+                                        <span class="badge bg-{{ 'success' if metrics.activity_label == 'normal' else 'warning' if metrics.activity_label == 'walking' else 'danger' if metrics.activity_label == 'fall' else 'info' }}">
+                                            {{ metrics.activity_label.title() if metrics.activity_label else 'Unknown' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                        <p>No recent metrics available. Upload a recording to see health data.</p>
+                        <a href="{{ url_for('upload_recording') }}?patient_id={{ patient.id }}" class="btn btn-primary">
+                            <i class="fas fa-upload me-1"></i>Upload First Recording
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
